@@ -12,9 +12,9 @@ load_dotenv()
 # Initialiser Flask
 app = Flask(__name__)
     
-endpoint = os.getenv("ENDPOINT_URL", "https://mindlaunch-azure-openai.openai.azure.com/")  
-deployment = os.getenv("DEPLOYMENT_NAME", "gpt-4")  
-subscription_key = os.getenv("AZURE_OPENAI_API_KEY", "9dn00w1yqvUbpwdroiZnZyJ71EAuDWvvczslrs9y4pZkvRfg3TP1JQQJ99BBACYeBjFXJ3w3AAABACOGi26S")  
+endpoint = os.getenv("ENDPOINT_URL")  
+deployment = os.getenv("DEPLOYMENT_NAME")  
+subscription_key = os.getenv("AZURE_OPENAI_API_KEY")  
 
 # Initialiser le client Azure OpenAI Service avec une authentification basée sur une clé    
 client = AzureOpenAI(  
