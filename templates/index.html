@@ -1,25 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind Launch AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>Mind Launch AI</h1>
+    <h1>Mind Launch AI</h1>
+    <div class="agent-selection">
+        <div class="agent-card" data-agent="abraham_hicks">
+            <img src="{{ url_for('static', filename='images/abraham_hicks.jpeg') }}" alt="Abraham Hicks">
+            <h3>Abraham Hicks</h3>
+            <p>Law of Attraction</p>
         </div>
-        <div id="chat-box">
-            <!-- Les messages de discussion seront affichés ici -->
-        </div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
-            <button id="send-btn">Send</button>
+        <div class="agent-card" data-agent="napoleon_hill">
+            <img src="{{ url_for('static', filename='images/napoleon_hill.jpg') }}" alt="Napoleon Hill">
+            <h3>Napoleon Hill</h3>
+            <p>Think and Grow Rich</p>
         </div>
     </div>
+    <form id="chatForm">
+        <textarea id="userInput" name="message" placeholder="Posez votre question ici..." rows="4" cols="50"></textarea>
+        <br><br>
+        <button type="submit">Envoyer</button>
+        <button type="button" id="resetButton">Recommencer</button>
+    </form>
+    <div id="loading" style="display: none;">
+        <div class="loader"></div>
+        <p>Génération de la réponse...</p>
+    </div>
+    <div id="response" class="response-card"></div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.querySelectorAll('.agent-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.getElementById('chatForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userInput = document.getElementById('userInput').value;
+            const selectedAgent = document.querySelector('.agent-card.active').dataset.agent;
+
+            document.getElementById('loading').style.display = 'block';
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput, agent: selectedAgent }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerHTML = data.message;
+                document.getElementById('loading').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+            });
+        });
+
+        document.getElementById('resetButton').addEventListener('click', function() {
+            document.getElementById('userInput').value = '';
+            document.getElementById('response').innerHTML = '';
+            document.querySelectorAll('.agent-card').forEach(card => card.classList.remove('active'));
+        });
+    </script>
 </body>
 </html>
